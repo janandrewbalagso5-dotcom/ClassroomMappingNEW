@@ -71,6 +71,17 @@ Partial Class ManageUsers
         ddlAddDepartment.SelectedIndex = 0
     End Sub
 
+    Private Function HashPassword(plainText As String) As String
+        Using sha As SHA256 = SHA256.Create()
+            Dim bytes As Byte() = sha.ComputeHash(Encoding.UTF8.GetBytes(plainText))
+            Dim sb As New StringBuilder()
+            For Each b As Byte In bytes
+                sb.Append(b.ToString("x2"))
+            Next
+            Return sb.ToString()
+        End Using
+    End Function
+
     '  SAVE NEW USER
     Protected Sub btnAddSave_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnAddSave.Click
         If Not Page.IsValid Then Return
@@ -105,6 +116,7 @@ Partial Class ManageUsers
         Dim newUser As New UserAccount()
         newUser.Username = username
         newUser.FullName = fullName
+        newUser.Password = HashPassword(password)
         newUser.Role = role
         newUser.Email = email
         newUser.Phone = phone
@@ -238,6 +250,10 @@ Partial Class ManageUsers
             u.Phone = txtPhone.Text.Trim()
 
             Dim newPass As String = txtNewPassword.Text.Trim()
+
+            If newPass.Length >= 6 Then
+                u.Password = HashPassword(newPass)
+            End If
 
             Try
                 Database.UpdateUser(u)
