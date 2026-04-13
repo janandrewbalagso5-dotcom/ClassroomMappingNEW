@@ -1,7 +1,5 @@
-﻿Imports System
+Imports System
 Imports System.Web.UI
-Imports System.Security.Cryptography
-Imports System.Text
 
 Partial Class SignUp
     Inherits System.Web.UI.Page
@@ -16,17 +14,6 @@ Partial Class SignUp
             End If
         End If
     End Sub
-
-    Private Function HashPassword(plainText As String) As String
-        Using sha As SHA256 = SHA256.Create()
-            Dim bytes As Byte() = sha.ComputeHash(Encoding.UTF8.GetBytes(plainText))
-            Dim sb As New StringBuilder()
-            For Each b As Byte In bytes
-                sb.Append(b.ToString("x2"))
-            Next
-            Return sb.ToString()
-        End Using
-    End Function
 
     Protected Sub btnSignUp_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnSignUp.Click
 
@@ -61,7 +48,7 @@ Partial Class SignUp
         Try
             Dim newUser As New UserAccount()
             newUser.Username = username
-            newUser.Password = HashPassword(txtPassword.Text.Trim())
+            newUser.Password = AuthHelper.HashPassword(txtPassword.Text.Trim())
             newUser.Role = selectedRole
             newUser.FullName = txtFullName.Text.Trim()
             newUser.Email = txtEmail.Text.Trim()

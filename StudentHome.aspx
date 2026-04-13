@@ -659,7 +659,7 @@
             <div class="filter-bar">
                 <label>Time Slot:</label>
                 <asp:DropDownList ID="ddlTime" runat="server" CssClass="form-control" AutoPostBack="true">
-                    <asp:ListItem Value="">— All Time Slots —</asp:ListItem>
+                    <asp:ListItem Value="">-- All Time Slots --</asp:ListItem>
                     <asp:ListItem>7:30-8:30</asp:ListItem>
                     <asp:ListItem>8:30-9:30</asp:ListItem>
                     <asp:ListItem>9:30-10:30</asp:ListItem>

@@ -1,7 +1,5 @@
 ﻿Imports System
 Imports System.Web.UI
-Imports System.Security.Cryptography
-Imports System.Text
 
 Partial Class Profile
     Inherits System.Web.UI.Page
@@ -37,16 +35,7 @@ Partial Class Profile
         End If
     End Sub
 
-    Private Function HashPassword(plainText As String) As String
-        Using sha As SHA256 = SHA256.Create()
-            Dim bytes As Byte() = sha.ComputeHash(Encoding.UTF8.GetBytes(plainText))
-            Dim sb As New StringBuilder()
-            For Each b As Byte In bytes
-                sb.Append(b.ToString("x2"))
-            Next
-            Return sb.ToString()
-        End Using
-    End Function
+
 
     Protected Sub btnChangePw_Click(ByVal sender As Object, ByVal e As EventArgs) Handles btnChangePw.Click
         Dim userID As Integer = AuthHelper.GetUserID(Me)
@@ -57,10 +46,10 @@ Partial Class Profile
         Dim newPw As String = txtNewPw.Text.Trim()
         Dim confirm As String = txtConfirmPw.Text.Trim()
 
-        Dim currentHsh As String = HashPassword(current)
+        Dim currentHsh As String = AuthHelper.HashPassword(current)
 
         ' Verify current password using SHA-256
-        If user.Password <> HashPassword(txtCurrentPw.Text) Then
+        If user.Password <> AuthHelper.HashPassword(txtCurrentPw.Text) Then
             lblPwMsg.Text = "Current password is incorrect."
             lblPwMsg.CssClass = "msg-error"
             Return
@@ -79,7 +68,7 @@ Partial Class Profile
         End If
 
         ' Save hashed new password
-        user.Password = HashPassword(newPw)
+        user.Password = AuthHelper.HashPassword(newPw)
         Database.UpdateUser(user)
 
         lblPwMsg.Text = "Password updated successfully."
