@@ -1,0 +1,20 @@
+﻿TODO:
+-- Done?? --
+ 1. Class schedule
+	- need only your subjects, name and yr lvl in the list.
+	- fix assigning > you can't assign others obviously.
+	-
+
+--- Could be better ---
+3. Profile, Panel, Login & Signup
+	- Also need redesign 
+	- Diff. color
+
+-- Could be better --
+Overall Design 
+	- Need to redesign it's to bright 
+	- Just make it simple that is pleasant to see.
+	-
+
+SignUp instructor panel
+	- If IT department only IT subj. you can see 

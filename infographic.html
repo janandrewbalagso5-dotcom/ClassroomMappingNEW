@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Classroom Mapping System — Quick Facts | OLPC San Manuel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --navy:   #0d1b3e;
+      --navy2:  #112050;
+      --gold:   #f5c542;
+      --gold2:  #e8a800;
+      --white:  #ffffff;
+      --light:  #dce6f7;
+      --muted:  #7a93bf;
+      --green:  #2ecc71;
+      --red:    #e74c3c;
+      --teal:   #1abc9c;
+      --purple: #9b59b6;
+      --orange: #e67e22;
+      --blue:   #3498db;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: #060e22;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+    }
+
+    /* ── CANVAS ── */
+    .canvas {
+      width: 820px;
+      background: var(--navy);
+      overflow: hidden;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(160deg, #060e22 0%, #0d1b3e 55%, #162660 100%);
+      padding: 52px 48px 44px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero::before {
+      width: 420px; height: 420px;
+      top: -160px; left: -100px;
+      background: radial-gradient(circle, rgba(245,197,66,.13) 0%, transparent 65%);
+    }
+    .hero::after {
+      width: 340px; height: 340px;
+      bottom: -120px; right: -60px;
+      background: radial-gradient(circle, rgba(52,152,219,.10) 0%, transparent 70%);
+    }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      background: rgba(245,197,66,.1);
+      border: 1px solid rgba(245,197,66,.3);
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+    }
+    .hero-school {
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+    }
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 44px;
+      font-weight: 900;
+      line-height: 1.1;
+      color: var(--white);
+    }
+    .hero h1 em {
+      color: var(--gold);
+      font-style: italic;
+    }
+    .hero-tagline {
+      font-size: 15px;
+      color: var(--muted);
+      margin-top: 14px;
+      max-width: 460px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.65;
+    }
+
+    /* ── SECTION WRAPPER ── */
+    .sec {
+      padding: 38px 48px;
+    }
+    .sec-alt {
+      background: #0c1836;
+    }
+    .sec-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .sec-label::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(245,197,66,.2);
+    }
+
+    /* ── QUOTE CARD (big sayings) ── */
+    .quote-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .quote-card {
+      border-radius: 16px;
+      padding: 26px 28px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      position: relative;
+      overflow: hidden;
+    }
+    .quote-card::before {
+      content: '"';
+      font-family: 'Playfair Display', serif;
+      font-size: 120px;
+      line-height: 1;
+      position: absolute;
+      top: -20px; right: 16px;
+      opacity: .06;
+      color: var(--white);
+      pointer-events: none;
+    }
+    .qc-blue   { background: linear-gradient(135deg, rgba(52,152,219,.12), rgba(52,152,219,.04)); border: 1px solid rgba(52,152,219,.22); }
+    .qc-gold   { background: linear-gradient(135deg, rgba(245,197,66,.12), rgba(245,197,66,.03)); border: 1px solid rgba(245,197,66,.22); }
+    .qc-green  { background: linear-gradient(135deg, rgba(46,204,113,.12), rgba(46,204,113,.03)); border: 1px solid rgba(46,204,113,.22); }
+    .qc-purple { background: linear-gradient(135deg, rgba(155,89,182,.12), rgba(155,89,182,.03)); border: 1px solid rgba(155,89,182,.22); }
+    .qc-orange { background: linear-gradient(135deg, rgba(230,126,34,.12), rgba(230,126,34,.03)); border: 1px solid rgba(230,126,34,.22); }
+    .qc-teal   { background: linear-gradient(135deg, rgba(26,188,156,.12), rgba(26,188,156,.03)); border: 1px solid rgba(26,188,156,.22); }
+    .q-icon {
+      font-size: 36px;
+      flex-shrink: 0;
+      line-height: 1;
+    }
+    .q-body {}
+    .q-saying {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+    .q-sub {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .q-sub strong { color: var(--light); }
+
+    /* numbered pairs */
+    .num-badge {
+      display: inline-block;
+      font-family: 'Playfair Display', serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      background: rgba(245,197,66,.1);
+      border: 1px solid rgba(245,197,66,.25);
+      border-radius: 50%;
+      width: 26px; height: 26px;
+      text-align: center;
+      line-height: 24px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+
+    /* ── DID YOU KNOW grid ── */
+    .dyk-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .dyk-card {
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .dyk-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      border-radius: 14px 14px 0 0;
+    }
+    .dyk1::after { background: linear-gradient(90deg,#3498db,#1abc9c); }
+    .dyk2::after { background: linear-gradient(90deg,#f5c542,#e67e22); }
+    .dyk3::after { background: linear-gradient(90deg,#9b59b6,#3498db); }
+    .dyk4::after { background: linear-gradient(90deg,#2ecc71,#1abc9c); }
+    .dyk5::after { background: linear-gradient(90deg,#e74c3c,#9b59b6); }
+    .dyk6::after { background: linear-gradient(90deg,#e67e22,#f5c542); }
+    .dyk-label {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .dyk-fact {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.35;
+      margin-bottom: 8px;
+    }
+    .dyk-detail {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ── BIG NUMBER row ── */
+    .bignums {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: rgba(255,255,255,.05);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 28px;
+    }
+    .bignum-item {
+      background: var(--navy);
+      padding: 24px 14px;
+      text-align: center;
+    }
+    .bignum-val {
+      font-family: 'Playfair Display', serif;
+      font-size: 38px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .bignum-unit {
+      font-size: 13px;
+      color: var(--gold2);
+    }
+    .bignum-lbl {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+      line-height: 1.4;
+    }
+
+    /* ── ROLE SAYINGS (horizontal) ── */
+    .role-sayings {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .role-saying-row {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+    }
+    .rs-icon-col {
+      width: 52px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      flex-shrink: 0;
+    }
+    .rs-blue   { background: rgba(52,152,219,.15); }
+    .rs-purple { background: rgba(155,89,182,.15); }
+    .rs-green  { background: rgba(46,204,113,.15); }
+    .rs-orange { background: rgba(230,126,34,.15); }
+    .rs-body {
+      flex: 1;
+      background: rgba(255,255,255,.03);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 12px;
+      padding: 14px 18px;
+    }
+    .rs-role {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .rs-saying {
+      font-family: 'Playfair Display', serif;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .rs-detail {
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* ── TIP PILLS ── */
+    .tip-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .tip-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.06);
+      border-radius: 12px;
+      padding: 14px 16px;
+    }
+    .tip-emoji { font-size: 20px; flex-shrink: 0; }
+    .tip-text { font-size: 12px; color: var(--light); line-height: 1.6; }
+    .tip-text strong { color: var(--gold); }
+
+    /* ── FOOTER ── */
+    .footer {
+      background: #060e22;
+      padding: 30px 48px;
+      text-align: center;
+    }
+    .footer-wordmark {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .footer-wordmark span { color: var(--white); }
+    .footer-tagline {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 6px;
+    }
+    .footer-hr {
+      height: 1px;
+      background: rgba(255,255,255,.05);
+      margin: 18px 0;
+    }
+    .footer-chips {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      font-size: 10px;
+      color: var(--muted);
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.07);
+      padding: 4px 13px;
+      border-radius: 14px;
+    }
+  </style>
+</head>
+<body>
+<div class="canvas">
+
+  <!-- ═══ HERO ═══ -->
+  <div class="hero">
+    <div class="hero-eyebrow">✦ System Quick Facts</div>
+    <div class="hero-school">Our Lady of the Pillar College – San Manuel Inc.</div>
+    <h1>Classroom <em>Mapping</em> System</h1>
+    <p class="hero-tagline">
+      Everything you need to know about our scheduling system — in bite-sized facts, tips, and sayings.
+    </p>
+  </div>
+
+  <!-- ═══ BIG NUMBERS ═══ -->
+  <div class="sec">
+    <div class="bignums">
+      <div class="bignum-item">
+        <div class="bignum-val">4</div>
+        <div class="bignum-lbl">User Roles</div>
+      </div>
+      <div class="bignum-item">
+        <div class="bignum-val">35</div>
+        <div class="bignum-lbl">Rooms Mapped<br>across 3 Floors</div>
+      </div>
+      <div class="bignum-item">
+        <div class="bignum-val">10</div>
+        <div class="bignum-lbl">Time Slots<br>per Day</div>
+      </div>
+      <div class="bignum-item">
+        <div class="bignum-val">30<span class="bignum-unit">min</span></div>
+        <div class="bignum-lbl">Session<br>Timeout</div>
+      </div>
+    </div>
+
+    <!-- core sayings -->
+    <div class="sec-label">✦ What This System Does</div>
+    <div class="quote-stack">
+
+      <div class="quote-card qc-blue">
+        <div class="q-icon">🗺️</div>
+        <div class="q-body">
+          <div class="q-saying">Every room has a story. We make sure no two stories clash.</div>
+          <div class="q-sub">The system tracks every room across <strong>3 floors</strong> (Ground, 2nd, 3rd) and instantly detects if a room, instructor, or section is double-booked — before it's saved.</div>
+        </div>
+      </div>
+
+      <div class="quote-card qc-gold">
+        <div class="q-icon">📅</div>
+        <div class="q-body">
+          <div class="q-saying">MWF or TTH — we've got both covered, all in one grid.</div>
+          <div class="q-sub">Schedules are split into <strong>MWF</strong> (Monday-Wednesday-Friday) and <strong>TTH</strong> (Tuesday-Thursday) day types, rendered as an interactive room-by-timeslot table you can click to edit inline.</div>
+        </div>
+      </div>
+
+      <div class="quote-card qc-green">
+        <div class="q-icon">📊</div>
+        <div class="q-body">
+          <div class="q-saying">Teaching is more than showing up — this system proves it on paper.</div>
+          <div class="q-sub">The <strong>Teaching Load Report</strong> auto-generates a printable document per instructor: subjects, schedules, units, room numbers, and a signature block — ready for official use.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ DID YOU KNOW ═══ -->
+  <div class="sec sec-alt">
+    <div class="sec-label">✦ Did You Know?</div>
+    <div class="dyk-grid">
+
+      <div class="dyk-card dyk1">
+        <div class="dyk-label">Security</div>
+        <div class="dyk-fact">Passwords are never stored as plain text.</div>
+        <div class="dyk-detail">Every password is scrambled through <strong>SHA-256 hashing</strong> — a 64-character code — before it ever touches the database. Even admins can't see your real password.</div>
+      </div>
+
+      <div class="dyk-card dyk2">
+        <div class="dyk-label">Registration</div>
+        <div class="dyk-fact">Students & Instructors sign up themselves. Admins don't.</div>
+        <div class="dyk-detail">Anyone can register as a Student or Instructor. Admin and Dean accounts are sealed — they must be created directly inside the system by an existing Admin.</div>
+      </div>
+
+      <div class="dyk-card dyk3">
+        <div class="dyk-label">Conflict Guard</div>
+        <div class="dyk-fact">3 conflicts are checked before any schedule is saved.</div>
+        <div class="dyk-detail"><strong>Room conflict</strong>, <strong>Instructor conflict</strong>, and <strong>Section conflict</strong> — all three run every time a slot is assigned or updated, keeping the schedule clean and honest.</div>
+      </div>
+
+      <div class="dyk-card dyk4">
+        <div class="dyk-label">Student View</div>
+        <div class="dyk-fact">Students only see the instructors from their own course.</div>
+        <div class="dyk-detail">When a student logs in, the instructor dropdown on their map is automatically filtered to match their registered course code — no manual setup needed.</div>
+      </div>
+
+      <div class="dyk-card dyk5">
+        <div class="dyk-label">Smart Routing</div>
+        <div class="dyk-fact">The system sends you to the right page the moment you log in.</div>
+        <div class="dyk-detail">Students land on <strong>StudentHome.aspx</strong>. Staff (Admin, Dean, Instructor) go to the full dashboard. Every role has its own front door.</div>
+      </div>
+
+      <div class="dyk-card dyk6">
+        <div class="dyk-label">Instructor Tip</div>
+        <div class="dyk-fact">Instructors can only assign themselves — no impersonating others.</div>
+        <div class="dyk-detail">When adding a schedule entry, Instructors can only pick themselves as the instructor. They also see only their own subjects in every dropdown.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ ROLE SAYINGS ═══ -->
+  <div class="sec">
+    <div class="sec-label">✦ One Line Per Role</div>
+    <div class="role-sayings">
+
+      <div class="role-saying-row">
+        <div class="rs-icon-col rs-blue">👑</div>
+        <div class="rs-body">
+          <div class="rs-role" style="color:#3498db">Admin</div>
+          <div class="rs-saying">"The only one with all the keys."</div>
+          <div class="rs-detail">Full access to everything — schedules, subjects, instructors, and user accounts. The only role that can create or delete other users.</div>
+        </div>
+      </div>
+
+      <div class="role-saying-row">
+        <div class="rs-icon-col rs-purple">🎓</div>
+        <div class="rs-body">
+          <div class="rs-role" style="color:#9b59b6">Dean</div>
+          <div class="rs-saying">"Almost all access — except managing users."</div>
+          <div class="rs-detail">Can handle everything academic — subjects, instructors, and schedules — but user account management stays in Admin hands only.</div>
+        </div>
+      </div>
+
+      <div class="role-saying-row">
+        <div class="rs-icon-col rs-green">👨‍🏫</div>
+        <div class="rs-body">
+          <div class="rs-role" style="color:#2ecc71">Instructor</div>
+          <div class="rs-saying">"My schedule, my subjects, my lane."</div>
+          <div class="rs-detail">Instructors manage only their own entries. They can't edit another instructor's schedule, assign other people to their subjects, or touch user accounts.</div>
+        </div>
+      </div>
+
+      <div class="role-saying-row">
+        <div class="rs-icon-col rs-orange">🎒</div>
+        <div class="rs-body">
+          <div class="rs-role" style="color:#e67e22">Student</div>
+          <div class="rs-saying">"Look, but don't touch."</div>
+          <div class="rs-detail">Read-only access to a room map filtered to their course's instructors. Any attempt to access management pages redirects to Access Denied.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ QUICK TIPS ═══ -->
+  <div class="sec sec-alt">
+    <div class="sec-label">✦ Good to Know</div>
+    <div class="tip-list">
+
+      <div class="tip-item">
+        <span class="tip-emoji">⏱️</span>
+        <div class="tip-text"><strong>Idle for 30 minutes?</strong> The system will log you out automatically. Session is stored in server memory — not in your browser or a cookie file.</div>
+      </div>
+
+      <div class="tip-item">
+        <span class="tip-emoji">🏫</span>
+        <div class="tip-text"><strong>Rooms 206 and 207</strong> are computer labs. The system labels them "<strong>206 (LAB)</strong>" and "<strong>207 (LAB)</strong>" so they're easy to spot on the classroom map.</div>
+      </div>
+
+      <div class="tip-item">
+        <span class="tip-emoji">🔗</span>
+        <div class="tip-text"><strong>Schedules are linked to instructors by name — not by ID.</strong> If an instructor's name is changed, their old schedule entries won't update automatically. Best to keep names consistent.</div>
+      </div>
+
+      <div class="tip-item">
+        <span class="tip-emoji">📋</span>
+        <div class="tip-text"><strong>When an Instructor registers</strong>, the system automatically derives the correct course code from the department they choose — server-side, so it can't be tampered with through the browser.</div>
+      </div>
+
+      <div class="tip-item">
+        <span class="tip-emoji">🖨️</span>
+        <div class="tip-text"><strong>Teaching Load Reports</strong> match subjects to schedules using the Subject Code. If a code is slightly different between the two tables, the Days/Time/Room columns will show up blank in the printed report.</div>
+      </div>
+
+      <div class="tip-item">
+        <span class="tip-emoji">🔐</span>
+        <div class="tip-text"><strong>The system uses Windows Integrated Security</strong> to connect to the database — no username or password is stored in the config file. Clean and secure by design.</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ═══ CLOSING QUOTE ═══ -->
+  <div class="sec" style="text-align:center; padding-top:44px; padding-bottom:44px;">
+    <div style="
+      display:inline-block;
+      max-width:560px;
+      background: linear-gradient(135deg, rgba(245,197,66,.08), rgba(52,152,219,.06));
+      border: 1px solid rgba(245,197,66,.2);
+      border-radius: 20px;
+      padding: 36px 40px;
+      position:relative;
+    ">
+      <div style="font-size:40px; margin-bottom:14px;">🏫</div>
+      <div style="
+        font-family:'Playfair Display',serif;
+        font-size:22px;
+        font-weight:700;
+        color:var(--white);
+        line-height:1.4;
+        margin-bottom:14px;
+      ">
+        "One system, every classroom,<br>every instructor, every schedule —<br><em style="color:var(--gold)">organized.</em>"
+      </div>
+      <div style="font-size:12px; color:var(--muted);">
+        Classroom Mapping System · OLPC San Manuel Inc.<br>
+        ASP.NET Web Forms · VB.NET · SQL Server
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ FOOTER ═══ -->
+  <div class="footer">
+    <div class="footer-wordmark">Classroom <span>Mapping</span> System</div>
+    <div class="footer-tagline">Our Lady of the Pillar College – San Manuel Inc.</div>
+    <div class="footer-hr"></div>
+    <div class="footer-chips">
+      <span class="chip">🗄️ SQL Server</span>
+      <span class="chip">🔐 SHA-256 Auth</span>
+      <span class="chip">👑 4 Roles</span>
+      <span class="chip">🏫 35 Rooms</span>
+      <span class="chip">📅 MWF + TTH</span>
+      <span class="chip">🖨️ Teaching Load Reports</span>
+      <span class="chip">⏱️ 30-min Session</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

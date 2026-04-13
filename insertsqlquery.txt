@@ -1,0 +1,51 @@
+USE [ClassroomMappingDB]
+GO
+SET IDENTITY_INSERT [dbo].[UserAccounts] ON 
+
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (10, N'jimmy', N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', N'Instructor', N'Jimmy Velasco', N'jimmy@school.edu', N'', NULL, NULL)
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (11, N'romeo', N'404fa1edd74e27ec9c1c49a66f0a31ab40036fc39f146daffd1db1097ead9485', N'Instructor', N'Romeo T. Balingao', N'romeo@school.edu', N'09876543211', NULL, NULL)
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (12, N'admin', N'240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', N'Admin', N'System Administrator', N'admin@school.edu', N'', NULL, NULL)
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (14, N'hill', N'deb03c60a8f1da3c78f6aaeb2daf3f653666cbc854a9e893683645b33db65316', N'Instructor', N'Hillary Joy Rufino', N'hill@school.edu', N'01234567890', NULL, NULL)
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (15, N'drew', N'8ad7506daeda6ba387c9a1bc1c68e05b493c7932f62775de3938bf4473e8b96d', N'Student', N'Jan Andrew Balagso', N'drew@gmail.com', N'09955833581', NULL, N'BSIT')
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (16, N'rone', N'ad21e858bc78ee4ea02b6e8068988fe045fd7ada0879e68124f6fcae70b77a6e', N'Student', N'tyrone', N'rone@gmail.com', N'09955839809', NULL, N'FM')
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (17, N'mich', N'4ec5be09e2844f8957ab7995ccef8774c543995598b076b7a54377b3758149d6', N'Student', N'Michael', N'mich@gmail.com', N'09955831271', NULL, N'BSCrim')
+INSERT [dbo].[UserAccounts] ([UserID], [Username], [Password], [Role], [FullName], [Email], [Phone], [LinkedInstructorID], [CourseCode]) VALUES (18, N'loni', N'6f2956459559fd203fb4cd45a2475bb394dae63230024d574d8eb6721b12cef8', N'Student', N'lonie baloni', N'', N'', NULL, N'BEEd')
+SET IDENTITY_INSERT [dbo].[UserAccounts] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Instructors] ON 
+
+INSERT [dbo].[Instructors] ([InstructorID], [UserID], [Name], [Qualifications], [Position], [YearsExperience], [HEA], [Department], [CourseCode]) VALUES (10, 10, N'Jimmy Velasco', N'Bachelor''s Degree', N'Instructor', 6, 0, N'Bachelor of Science in Information Technology', N'BSIT')
+INSERT [dbo].[Instructors] ([InstructorID], [UserID], [Name], [Qualifications], [Position], [YearsExperience], [HEA], [Department], [CourseCode]) VALUES (11, 11, N'Romeo T. Balingao', N'Master in Information Technology (MIT)', N'Coordinator', 10, 1, N'Bachelor of Science in Information Technology', N'BSIT')
+INSERT [dbo].[Instructors] ([InstructorID], [UserID], [Name], [Qualifications], [Position], [YearsExperience], [HEA], [Department], [CourseCode]) VALUES (12, 14, N'Hillary Joy Rufino', N'PhD in Education', N'Coordinator', 9, 1, N'Bachelor of Secondary Education (BSEd) — Major in English', N'')
+INSERT [dbo].[Instructors] ([InstructorID], [UserID], [Name], [Qualifications], [Position], [YearsExperience], [HEA], [Department], [CourseCode]) VALUES (14, NULL, N'Lizette Condrea Ramos', N'Bachelor of Science in Business Administration (BSBA)', N'Coordinator', 10, 1, N'Bachelor of Science in Business Administration — Major in Financial Management', N'')
+INSERT [dbo].[Instructors] ([InstructorID], [UserID], [Name], [Qualifications], [Position], [YearsExperience], [HEA], [Department], [CourseCode]) VALUES (15, NULL, N'Ian Bonilla', N'Master of Science in Criminology (MSCrim)', N'Coordinator', 10, 1, N'Bachelor of Science in Criminology', N'BSCrim')
+SET IDENTITY_INSERT [dbo].[Instructors] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Subjects] ON 
+
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (8, N'IT101', N'Object Oriented Programming', 3, N'BSIT', N'1', N'A', 12, 11)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (10, N'IT102', N'Introduction to Programming', 3, N'BSIT', N'2', N'', 11, NULL)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (11, N'IT1202', N'Introduction to Programming', 3, N'BSIT', N'1', N'A', 12, 10)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (13, N'PCom', N'Purposive Communication', 3, N'BSedME', N'1', N'A', 12, 12)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (14, N'Math 1', N'Mathematics in the Modern World', 3, N'BSedME', N'1', N'', 12, 12)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (15, N'IT102', N'Introduction to Computing', 3, N'BSHM', N'3', N'', 12, 10)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (16, N'IT1202', N'Introduction to Computing', 3, N'BSA', N'3', N'', 12, 11)
+INSERT [dbo].[Subjects] ([SubjectID], [Code], [Description], [Units], [CourseCode], [YearLevel], [Section], [AddedByUserID], [AssignedInstructorID]) VALUES (17, N'PCom', N'Purposive Communication', 3, N'BSedME', N'1', N'B', 12, 12)
+SET IDENTITY_INSERT [dbo].[Subjects] OFF
+GO
+SET IDENTITY_INSERT [dbo].[Schedules] ON 
+
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (2, N'102', N'7:30-8:30', N'MWF', N'IT101', N'BSIT2', N'Romeo T. Balingao')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (3, N'105', N'7:30-8:30', N'MWF', N'IT102', N'BSIT1-A', N'Jimmy Velasco')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (5, N'102', N'7:30-8:30', N'TTH', N'IT1202', N'BSIT1-A', N'Jimmy Velasco')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (6, N'104', N'1:30-2:30', N'MWF', N'IT101', N'BSedME1', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (7, N'103', N'7:30-8:30', N'MWF', N'IT101', N'BSedME1', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (8, N'101', N'11:30-12:30', N'MWF', N'IT1202', N'BSA3', N'Romeo T. Balingao')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (9, N'103', N'10:30-11:30', N'MWF', N'PCom', N'BSedME1-A', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (10, N'103', N'10:30-11:30', N'TTH', N'PCom', N'BSedME1-B', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (11, N'101', N'1:30-2:30', N'TTH', N'Math 1', N'BSedME1', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (12, N'106', N'7:30-8:30', N'TTH', N'PCom', N'BSedME1-B', N'Hillary Joy Rufino')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (13, N'102', N'2:30-3:30', N'MWF', N'IT102', N'BSIT1-A', N'Jimmy Velasco')
+INSERT [dbo].[Schedules] ([ScheduleID], [RoomNo], [TimeSlot], [DayType], [SubjectCode], [CourseSection], [InstructorName]) VALUES (14, N'102', N'12:30-1:30', N'TTH', N'IT1202', N'BSIT2', N'Romeo T. Balingao')
+SET IDENTITY_INSERT [dbo].[Schedules] OFF
+GO

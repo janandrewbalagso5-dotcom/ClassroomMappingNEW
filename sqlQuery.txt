@@ -1,0 +1,220 @@
+﻿USE ClassroomMappingDB;
+
+SELECT * FROM Instructors;
+SELECT * FROM Subjects;
+SELECT * FROM Schedules;
+SELECT * FROM CourseSections;
+SELECT * FROM UserAccounts;
+
+	-- Delete a specific Instructor by ID
+	DELETE FROM Instructors WHERE InstructorID = 0;
+
+-- Delete a specific subject by ID
+DELETE FROM Subjects WHERE SubjectID = 0;
+
+-- Delete a specific schedule
+DELETE FROM Schedules WHERE ScheduleID = 0;
+
+-- Delete a specific CourseSections
+DELETE FROM CourseSections WHERE SectionID = 0;
+
+-- Delete a specific UserAccounts
+DELETE FROM UserAccounts WHERE UserID = 0;
+
+
+-- ============================================================
+--  Classroom Mapping System — Full Database Script
+--  Our Lady of the Pillar College — San Manuel Inc.
+-- ============================================================
+
+USE ClassroomMappingDB;
+GO
+
+-- ============================================================
+--  DROP TABLES (safe re-run order — child tables first)
+-- ============================================================
+IF OBJECT_ID('Schedules',      'U') IS NOT NULL DROP TABLE Schedules;
+IF OBJECT_ID('Subjects',       'U') IS NOT NULL DROP TABLE Subjects;
+IF OBJECT_ID('CourseSections', 'U') IS NOT NULL DROP TABLE CourseSections;
+IF OBJECT_ID('Instructors',    'U') IS NOT NULL DROP TABLE Instructors;
+IF OBJECT_ID('UserAccounts',   'U') IS NOT NULL DROP TABLE UserAccounts;
+GO
+
+-- ============================================================
+--  TABLE: UserAccounts
+-- ============================================================
+CREATE TABLE UserAccounts (
+    UserID              INT            IDENTITY(1,1) PRIMARY KEY,
+    Username            NVARCHAR(100)  NOT NULL,
+    Password            NVARCHAR(255)  NOT NULL,
+    Role                NVARCHAR(50)   NOT NULL,          -- 'Admin' | 'Instructor' | 'Student'
+    FullName            NVARCHAR(150)  NOT NULL,
+    Email               NVARCHAR(150)  NOT NULL DEFAULT '',
+    Phone               NVARCHAR(20)   NOT NULL DEFAULT '',
+    LinkedInstructorID  INT            NULL,              -- FK to Instructors (set after insert)
+    CourseCode          NVARCHAR(50)   NOT NULL DEFAULT '' -- e.g. 'BSIT', 'BSBAMM', 'BSCrim'
+);
+GO
+
+-- ============================================================
+--  TABLE: Instructors
+-- ============================================================
+CREATE TABLE Instructors (
+    InstructorID      INT            IDENTITY(1,1) PRIMARY KEY,
+    UserID            INT            NULL,                -- FK to UserAccounts
+    Name              NVARCHAR(150)  NOT NULL,
+    Qualifications    NVARCHAR(255)  NOT NULL DEFAULT '',
+    Position          NVARCHAR(100)  NOT NULL DEFAULT '',
+    YearsExperience   INT            NOT NULL DEFAULT 0,
+    HEA               BIT            NOT NULL DEFAULT 0,
+    Department        NVARCHAR(255)  NOT NULL DEFAULT '',
+    CourseCode        NVARCHAR(50)   NOT NULL DEFAULT ''  -- e.g. 'BSIT', 'BSEd', 'BSCrim'
+);
+GO
+
+-- ============================================================
+--  TABLE: Subjects
+-- ============================================================
+CREATE TABLE Subjects (
+    SubjectID             INT            IDENTITY(1,1) PRIMARY KEY,
+    Code                  NVARCHAR(50)   NOT NULL,
+    Description           NVARCHAR(255)  NOT NULL DEFAULT '',
+    Units                 INT            NOT NULL DEFAULT 3,
+    CourseCode            NVARCHAR(50)   NOT NULL DEFAULT '',
+    YearLevel             NVARCHAR(10)   NOT NULL DEFAULT '',
+    Section               NVARCHAR(10)   NOT NULL DEFAULT '',
+    AddedByUserID         INT            NOT NULL DEFAULT 0,
+    AssignedInstructorID  INT            NULL               -- FK to Instructors
+);
+GO
+
+-- ============================================================
+--  TABLE: CourseSections
+-- ============================================================
+CREATE TABLE CourseSections (
+    SectionID   INT           IDENTITY(1,1) PRIMARY KEY,
+    CourseCode  NVARCHAR(50)  NOT NULL,
+    YearLevel   NVARCHAR(10)  NOT NULL,
+    Section     NVARCHAR(10)  NOT NULL
+);
+GO
+
+-- ============================================================
+--  TABLE: Schedules
+-- ============================================================
+CREATE TABLE Schedules (
+    ScheduleID      INT            IDENTITY(1,1) PRIMARY KEY,
+    RoomNo          NVARCHAR(20)   NOT NULL DEFAULT '',
+    TimeSlot        NVARCHAR(20)   NOT NULL DEFAULT '',
+    DayType         NVARCHAR(10)   NOT NULL DEFAULT '',   -- 'MWF' | 'TTH'
+    SubjectCode     NVARCHAR(50)   NOT NULL DEFAULT '',
+    CourseSection   NVARCHAR(50)   NOT NULL DEFAULT '',   -- e.g. 'BSIT1-A'
+    InstructorName  NVARCHAR(150)  NOT NULL DEFAULT ''
+);
+GO
+
+-- ============================================================
+--  SEED DATA: UserAccounts
+--  (Identity starts at 16 to match screenshot — adjust if needed)
+-- ============================================================
+SET IDENTITY_INSERT UserAccounts ON;
+
+INSERT INTO UserAccounts (UserID, Username, Password, Role, FullName, Email, Phone, LinkedInstructorID, CourseCode)
+VALUES
+-- Instructors
+(16, 'romeo', '404fa1edd74e27ec9c1c49a66f0a31ab40036fc39f146daffd1db1097ead9485', 'Instructor', 'Romeo Balagso',         'romeo@school.edu.ph', '09876543211', NULL, ''),
+(33, 'jimmy', 'c0fcbe3f82b21713459fe7b4774ba1ed6cb46d24ca156a5b2b083ca30eade34e', 'Instructor', 'Jimmy Velasco',         'jimmy@school.edu.ph', '01234567...',  NULL, ''),
+(34, 'hill',  'deb03c60a8f1da3c78f6aaeb2daf3f653666cbc854a9e893683645b33db65316', 'Instructor', 'Hillary Joy Rufino',    'hill@school.edu.ph',  '09725678...',  NULL, ''),
+(35, 'ian',   'b1d098f1bb57e734f8362fa66fcea92860ee9213012005ee5d7f6505de98d861', 'Instructor', 'Ian Angelo Bonilla',    'ian@school.edu.ph',   '09876482...',  NULL, ''),
+(36, 'rosa',  'b355f39816ff136c65cae7087e0348c2b7c949bf9c1a31362a8731eac96c20aa', 'Instructor', 'Rosalyn Velasco',       'rosa@school.edu.ph',  '09818273...',  NULL, ''),
+(37, 'liz',   '9c9f8837f7fd0d250cafd3ae163e47254ad3253d0fe99f54ecd8cc7bb18e18f',  'Instructor', 'Lizette Condrea Ramos', 'liz@school.edu.ph',   '09890765...',  NULL, ''),
+-- Admin
+(32, 'admin', '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9', 'Admin',      'System Administrator',  'admin@school.edu',    '',             NULL, ''),
+-- Student
+(38, 'drew',  '8ad7506daeda6ba387c9a1bc1c68e05b493c7932f62775de3938bf4473e8b96d', 'Student',    'Andrew Balagso',        'drew@gmail.com',      '09955833...',  NULL, '');
+
+SET IDENTITY_INSERT UserAccounts OFF;
+GO
+
+-- ============================================================
+--  SEED DATA: Instructors
+--  (Identity starts at 4 to match screenshot)
+-- ============================================================
+SET IDENTITY_INSERT Instructors ON;
+
+INSERT INTO Instructors (InstructorID, UserID, Name, Qualifications, Position, YearsExperience, HEA, Department, CourseCode)
+VALUES
+(4,  16, 'Romeo T. Balagso',      'Master in Information Technology (MIT)',     'Coordinator', 10, 1, 'Bachelor of Science in Information Technology',                                    'BSIT'),
+(6,  33, 'Jimmy Velasco',         'Master''s Degree',                           'Instructor',   9, 1, 'Bachelor of Science in Information Technology',                                    'BSIT'),
+(7,  34, 'Hillary Joy Rufino',    'PhD in Education',                           'Coordinator',  9, 1, 'Bachelor of Secondary Education (BSEd) — Major in English',                        'BSEd'),
+(8,  35, 'Ian Angelo Bonilla',    'Master of Science in Criminology (MSCrim)',  'Coordinator', 10, 1, 'Bachelor of Science in Criminology',                                               'BSCrim'),
+(9,  36, 'Rosalyn Velasco',       'Master of Business Administration (MBA)',    'Coordinator',  9, 1, 'Bachelor of Science in Business Administration — Major in Financial Management',    'FM'),
+(10, 37, 'Lizette Condrea Ramos', 'Master of Business Administration (MBA)',    'Coordinator', 13, 1, 'Bachelor of Science in Business Administration — Major in Marketing Management',   'BSBAMM');
+
+SET IDENTITY_INSERT Instructors OFF;
+GO
+
+-- ============================================================
+--  UPDATE: Link UserAccounts → Instructors (LinkedInstructorID)
+-- ============================================================
+UPDATE UserAccounts SET LinkedInstructorID = 4  WHERE UserID = 16;
+UPDATE UserAccounts SET LinkedInstructorID = 6  WHERE UserID = 33;
+UPDATE UserAccounts SET LinkedInstructorID = 7  WHERE UserID = 34;
+UPDATE UserAccounts SET LinkedInstructorID = 8  WHERE UserID = 35;
+UPDATE UserAccounts SET LinkedInstructorID = 9  WHERE UserID = 36;
+UPDATE UserAccounts SET LinkedInstructorID = 10 WHERE UserID = 37;
+GO
+
+-- ============================================================
+--  SEED DATA: Subjects
+--  (Identity starts at 15 to match screenshot)
+-- ============================================================
+SET IDENTITY_INSERT Subjects ON;
+
+INSERT INTO Subjects (SubjectID, Code, Description, Units, CourseCode, YearLevel, Section, AddedByUserID, AssignedInstructorID)
+VALUES
+(15, 'ITPC 311', 'Advance Database Management System',     3, 'BSIT', '2', '',  32, 4),
+(16, 'ITPC 312', 'System Integration and Architectures 1', 3, 'BSIT', '2', '',  32, 4),
+(17, 'IT101',    'Introduction to Computing',              3, 'BSIT', '1', 'A', 32, 5),
+(18, 'IT101',    'Introduction to Computing',              3, 'BSIT', '1', 'B', 32, 5);
+
+SET IDENTITY_INSERT Subjects OFF;
+GO
+
+-- ============================================================
+--  SEED DATA: CourseSections
+-- ============================================================
+SET IDENTITY_INSERT CourseSections ON;
+
+INSERT INTO CourseSections (SectionID, CourseCode, YearLevel, Section)
+VALUES
+(1, 'BSIT',   '1', 'A'),
+(2, 'BSIT',   '1', 'B'),
+(3, 'BSBAMM', '1', 'A'),
+(4, 'FM',     '1', 'A');
+
+SET IDENTITY_INSERT CourseSections OFF;
+GO
+
+-- ============================================================
+--  SEED DATA: Schedules
+--  (Identity starts at 6 to match screenshot)
+-- ============================================================
+SET IDENTITY_INSERT Schedules ON;
+
+INSERT INTO Schedules (ScheduleID, RoomNo, TimeSlot, DayType, SubjectCode, CourseSection, InstructorName)
+VALUES
+(6, '101', '7:30-8:30', 'TTH', 'IT102', 'BSIT1-A', 'Jimmy Velasco');
+
+SET IDENTITY_INSERT Schedules OFF;
+GO
+
+-- ============================================================
+--  VERIFY
+-- ============================================================
+SELECT 'Instructors'    AS [Table], COUNT(*) AS [Rows] FROM Instructors    UNION ALL
+SELECT 'Subjects',                  COUNT(*)            FROM Subjects        UNION ALL
+SELECT 'CourseSections',            COUNT(*)            FROM CourseSections  UNION ALL
+SELECT 'Schedules',                 COUNT(*)            FROM Schedules       UNION ALL
+SELECT 'UserAccounts',              COUNT(*)            FROM UserAccounts;
+GO
