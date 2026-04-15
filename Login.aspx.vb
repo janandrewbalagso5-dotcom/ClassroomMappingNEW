@@ -1,6 +1,4 @@
-﻿Imports System
-Imports System.Security.Cryptography
-Imports System.Text
+Imports System
 Imports System.Web.UI
 
 Partial Class Login
@@ -38,7 +36,7 @@ Partial Class Login
             Return
         End If
 
-        Dim hashedInput As String = HashPassword(password)
+        Dim hashedInput As String = AuthHelper.HashPassword(password)
 
         Dim u As UserAccount = Database.GetUserByCredentials(username, hashedInput)
 
@@ -60,17 +58,6 @@ Partial Class Login
         lblError.Text = message
         lblError.Visible = True
     End Sub
-
-    Private Function HashPassword(plainText As String) As String
-        Using sha As SHA256 = SHA256.Create()
-            Dim bytes As Byte() = sha.ComputeHash(Encoding.UTF8.GetBytes(plainText))
-            Dim sb As New StringBuilder()
-            For Each b As Byte In bytes
-                sb.Append(b.ToString("x2"))
-            Next
-            Return sb.ToString()
-        End Using
-    End Function
 
     Private Sub RedirectByRole(role As String)
         Select Case role

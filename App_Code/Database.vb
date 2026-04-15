@@ -1,11 +1,8 @@
-﻿Imports System
+Imports System
 Imports System.Collections.Generic
 Imports System.Data.SqlClient
 Imports System.Configuration
-
-' ============================================================
-'  Model Classes
-' ============================================================
+Imports System.Linq
 
 Public Class Subject
     Public Property SubjectID As Integer
@@ -66,12 +63,15 @@ Public Class UserAccount
 End Class
 
 ' ============================================================
-'  Database Class
-' ============================================================
 
 Public Class Database
 
-    Public Shared Function GetConnection() As SqlConnection
+    Public Shared ReadOnly TimeSlots As String() = {
+        "7:30-8:30", "8:30-9:30", "9:30-10:30", "10:30-11:30", "11:30-12:30",
+        "12:30-1:30", "1:30-2:30", "2:30-3:30", "3:30-4:30", "4:30-5:30"
+    }
+
+    Private Shared Function GetConnection() As SqlConnection
         Dim connStr As String = ConfigurationManager.ConnectionStrings("ClassroomMappingDB").ConnectionString
         Return New SqlConnection(connStr)
     End Function
@@ -104,47 +104,21 @@ Public Class Database
         Return Nothing
     End Function
 
-    Public Shared Function GetSubjectByCode(code As String) As Subject
-        Using conn = GetConnection()
-            conn.Open()
-            Dim cmd As New SqlCommand("SELECT * FROM Subjects WHERE Code = @code", conn)
-            cmd.Parameters.AddWithValue("@code", code)
-            Dim r = cmd.ExecuteReader()
-            If r.Read() Then Return MapSubject(r)
-        End Using
-        Return Nothing
-    End Function
-
-    Public Shared Function GetSubjectsByInstructorID(instructorID As Integer) As List(Of Subject)
-        Dim list As New List(Of Subject)
-        Using conn = GetConnection()
-            conn.Open()
-            Dim cmd As New SqlCommand(
-                "SELECT * FROM Subjects WHERE AssignedInstructorID = @id ORDER BY Code", conn)
-            cmd.Parameters.AddWithValue("@id", instructorID)
-            Dim r = cmd.ExecuteReader()
-            While r.Read()
-                list.Add(MapSubject(r))
-            End While
-        End Using
-        Return list
-    End Function
-
     Public Shared Sub AddSubject(s As Subject)
         Using conn = GetConnection()
             conn.Open()
             Dim sql As String =
                 "INSERT INTO Subjects (Code, Description, Units, CourseCode, YearLevel, Section, AddedByUserID, AssignedInstructorID) " &
-                "VALUES (@code, @desc, @units, @course, @year, @section, @addedBy, @assignedInstr)"
+                "VALUES (@code, @desc, @units, @course, @year, @sec, @addedBy, @assigned)"
             Dim cmd As New SqlCommand(sql, conn)
             cmd.Parameters.AddWithValue("@code", If(s.Code, ""))
             cmd.Parameters.AddWithValue("@desc", If(s.Description, ""))
             cmd.Parameters.AddWithValue("@units", s.Units)
             cmd.Parameters.AddWithValue("@course", If(s.CourseCode, ""))
             cmd.Parameters.AddWithValue("@year", If(s.YearLevel, ""))
-            cmd.Parameters.AddWithValue("@section", If(s.Section, ""))
+            cmd.Parameters.AddWithValue("@sec", If(s.Section, ""))
             cmd.Parameters.AddWithValue("@addedBy", s.AddedByUserID)
-            cmd.Parameters.AddWithValue("@assignedInstr",
+            cmd.Parameters.AddWithValue("@assigned",
                 If(s.AssignedInstructorID.HasValue, CObj(s.AssignedInstructorID.Value), DBNull.Value))
             cmd.ExecuteNonQuery()
         End Using
@@ -155,8 +129,7 @@ Public Class Database
             conn.Open()
             Dim sql As String =
                 "UPDATE Subjects SET Code=@code, Description=@desc, Units=@units, " &
-                "CourseCode=@course, YearLevel=@year, Section=@section, " &
-                "AssignedInstructorID=@assignedInstr " &
+                "CourseCode=@course, YearLevel=@year, Section=@sec, AssignedInstructorID=@assigned " &
                 "WHERE SubjectID=@id"
             Dim cmd As New SqlCommand(sql, conn)
             cmd.Parameters.AddWithValue("@code", If(s.Code, ""))
@@ -164,8 +137,8 @@ Public Class Database
             cmd.Parameters.AddWithValue("@units", s.Units)
             cmd.Parameters.AddWithValue("@course", If(s.CourseCode, ""))
             cmd.Parameters.AddWithValue("@year", If(s.YearLevel, ""))
-            cmd.Parameters.AddWithValue("@section", If(s.Section, ""))
-            cmd.Parameters.AddWithValue("@assignedInstr",
+            cmd.Parameters.AddWithValue("@sec", If(s.Section, ""))
+            cmd.Parameters.AddWithValue("@assigned",
                 If(s.AssignedInstructorID.HasValue, CObj(s.AssignedInstructorID.Value), DBNull.Value))
             cmd.Parameters.AddWithValue("@id", s.SubjectID)
             cmd.ExecuteNonQuery()
@@ -184,15 +157,15 @@ Public Class Database
     Private Shared Function MapSubject(r As SqlDataReader) As Subject
         Return New Subject With {
             .SubjectID = CInt(r("SubjectID")),
-            .Code = r("Code").ToString(),
-            .Description = r("Description").ToString(),
-            .Units = CInt(r("Units")),
-            .CourseCode = r("CourseCode").ToString(),
-            .YearLevel = r("YearLevel").ToString(),
-            .Section = r("Section").ToString(),
-            .AddedByUserID = CInt(r("AddedByUserID")),
+            .Code = If(IsDBNull(r("Code")), "", r("Code").ToString()),
+            .Description = If(IsDBNull(r("Description")), "", r("Description").ToString()),
+            .Units = If(IsDBNull(r("Units")), 0, CInt(r("Units"))),
+            .CourseCode = If(IsDBNull(r("CourseCode")), "", r("CourseCode").ToString()),
+            .YearLevel = If(IsDBNull(r("YearLevel")), "", r("YearLevel").ToString()),
+            .Section = If(IsDBNull(r("Section")), "", r("Section").ToString()),
+            .AddedByUserID = If(IsDBNull(r("AddedByUserID")), 0, CInt(r("AddedByUserID"))),
             .AssignedInstructorID = If(IsDBNull(r("AssignedInstructorID")), Nothing,
-                                       CType(CInt(r("AssignedInstructorID")), Integer?))
+                                        CType(CInt(r("AssignedInstructorID")), Integer?))
         }
     End Function
 
@@ -224,21 +197,6 @@ Public Class Database
         Return Nothing
     End Function
 
-    Public Shared Function GetInstructorByUserID(userID As Integer) As Instructor
-        Using conn = GetConnection()
-            conn.Open()
-            Dim cmd As New SqlCommand("SELECT * FROM Instructors WHERE UserID = @uid", conn)
-            cmd.Parameters.AddWithValue("@uid", userID)
-            Dim r = cmd.ExecuteReader()
-            If r.Read() Then Return MapInstructor(r)
-        End Using
-        Return Nothing
-    End Function
-
-    ''' <summary>
-    ''' Inserts a new Instructor and returns the generated InstructorID.
-    ''' Uses OUTPUT INSERTED to get the new ID in one round-trip.
-    ''' </summary>
     Public Shared Function AddInstructor(i As Instructor) As Integer
         Using conn = GetConnection()
             conn.Open()
@@ -263,9 +221,8 @@ Public Class Database
         Using conn = GetConnection()
             conn.Open()
             Dim sql As String =
-                "UPDATE Instructors SET " &
-                "UserID=@uid, Name=@name, Qualifications=@qual, Position=@pos, " &
-                "YearsExperience=@yrs, HEA=@hea, Department=@dept, CourseCode=@course " &
+                "UPDATE Instructors SET UserID=@uid, Name=@name, Qualifications=@qual, " &
+                "Position=@pos, YearsExperience=@yrs, HEA=@hea, Department=@dept, CourseCode=@course " &
                 "WHERE InstructorID=@id"
             Dim cmd As New SqlCommand(sql, conn)
             cmd.Parameters.AddWithValue("@uid", If(i.UserID.HasValue, CObj(i.UserID.Value), DBNull.Value))
@@ -315,42 +272,15 @@ Public Class Database
             Dim cmd As New SqlCommand("SELECT * FROM CourseSections ORDER BY CourseCode, YearLevel, Section", conn)
             Dim r = cmd.ExecuteReader()
             While r.Read()
-                list.Add(MapCourseSection(r))
+                list.Add(New CourseSection With {
+                    .SectionID = CInt(r("SectionID")),
+                    .CourseCode = r("CourseCode").ToString(),
+                    .YearLevel = r("YearLevel").ToString(),
+                    .Section = r("Section").ToString()
+                })
             End While
         End Using
         Return list
-    End Function
-
-    Public Shared Sub AddCourseSection(cs As CourseSection)
-        Using conn = GetConnection()
-            conn.Open()
-            Dim sql As String =
-                "INSERT INTO CourseSections (CourseCode, YearLevel, Section) " &
-                "VALUES (@course, @year, @section)"
-            Dim cmd As New SqlCommand(sql, conn)
-            cmd.Parameters.AddWithValue("@course", If(cs.CourseCode, ""))
-            cmd.Parameters.AddWithValue("@year", If(cs.YearLevel, ""))
-            cmd.Parameters.AddWithValue("@section", If(cs.Section, ""))
-            cmd.ExecuteNonQuery()
-        End Using
-    End Sub
-
-    Public Shared Sub DeleteCourseSection(id As Integer)
-        Using conn = GetConnection()
-            conn.Open()
-            Dim cmd As New SqlCommand("DELETE FROM CourseSections WHERE SectionID = @id", conn)
-            cmd.Parameters.AddWithValue("@id", id)
-            cmd.ExecuteNonQuery()
-        End Using
-    End Sub
-
-    Private Shared Function MapCourseSection(r As SqlDataReader) As CourseSection
-        Return New CourseSection With {
-            .SectionID = CInt(r("SectionID")),
-            .CourseCode = r("CourseCode").ToString(),
-            .YearLevel = r("YearLevel").ToString(),
-            .Section = r("Section").ToString()
-        }
     End Function
 
     ' ══════════════════════════════════════════
@@ -573,6 +503,18 @@ Public Class Database
                                      CType(CInt(r("LinkedInstructorID")), Integer?)),
             .CourseCode = If(IsDBNull(r("CourseCode")), "", r("CourseCode").ToString())
         }
+    End Function
+
+
+    Public Shared Function GetSubjectByCode(code As String) As Subject
+        Using conn = GetConnection()
+            conn.Open()
+            Dim cmd As New SqlCommand("SELECT * FROM Subjects WHERE Code = @code", conn)
+            cmd.Parameters.AddWithValue("@code", code)
+            Dim r = cmd.ExecuteReader()
+            If r.Read() Then Return MapSubject(r)
+        End Using
+        Return Nothing
     End Function
 
 End Class
